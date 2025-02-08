@@ -15,7 +15,7 @@ exports.Insert = (req, res, next) => {
     
     // verifica se a data é válida
     if (!dayjs(data).isValid()) {
-        return res.status(400).json({ message: 'Data inválida!' });
+        return res.status(400).json({ menssagem: 'Data inválida!' });
     }
 
     // verifica se a data é antiga
@@ -28,7 +28,7 @@ exports.Insert = (req, res, next) => {
                     menssagem: 'Registro inserido com sucesso!',
                     data: registro,
                 });
-            if(!registro){
+           else if(!registro){
                 res.status(404).json({menssagem: 'Conta não encontrada! '})
             }
         })
@@ -45,7 +45,7 @@ exports.SearchAll = (req, res, next) => {
             if (registro) {
                 res.status(200).send(registro);
             } else {
-                res.status(404).send("Registro não encontrado.");
+                res.status(404).json({menssagem: "Registro não encontrado."});
             }
         })
         .catch(error => next(error));
@@ -55,4 +55,30 @@ exports.Update = (req,res,next) =>{
     const id_registro = req.params.id_registro;
     const dadosRegistro = req.body
 
+    registroService.atualizarRegistro(dadosRegistro, id_registro)
+        .then(registro => {
+            if (registro){
+                res.status(200).send(registro)
+            }
+           else if(!registro){
+                res.status(410).json({menssagem: "Registro já processado ou removido."});
+            }
+        })
+        .catch(error => next(error));
+}
+
+exports.Delete = (req,res,next) => {
+    const id = req.params.id_registro
+
+    registroService.deletarRegistro(id)
+        .then(registro=>{
+            if(registro){
+                res.status(200).send('Registro deletado com sucesso')
+
+            }
+            else{
+                res.status(404).send('Registro não encontrado')
+            }
+        })
+        .catch(error => next(error));
 }

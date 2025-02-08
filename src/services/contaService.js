@@ -31,7 +31,7 @@ exports.buscarMetaPorId = async (id) => {
       },
       attributes: ['meta']
     });
-    console.log(dadosConta.meta)
+    
     return dadosConta.meta
 };
   

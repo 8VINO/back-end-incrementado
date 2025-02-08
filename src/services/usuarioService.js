@@ -45,57 +45,49 @@ exports.buscarUsuarioPorId = (id) => {
 };
 
 // Atualizar usuário
-exports.atualizarUsuario = async (id, nome, email, senhaAnterior, senhaNova) => {
+exports.atualizarUsuario = async (id, nomeR, emailR, senhaAnterior, senhaNova) => {
   
   
-  const emailRegistrado = await Usuario.findOne({
-    where: { email },
-    attributes: ['id_usuario', 'senha', 'nome', 'email']
-  });
+  const usuarioDoId = await Usuario.findByPk(id)
 
-  if (emailRegistrado && parseInt(id) === emailRegistrado.id_usuario) {
+  
+  
     
-    if (nome !== emailRegistrado.nome) {
-      const usuario = await Usuario.findByPk(id);
-      if (usuario) {
-        await usuario.update({ nome });
+    if (nomeR) {
+        await usuarioDoId.update({ nome: nomeR });
         return { mensagem: 'sucesso' };
       }
-    }
-
-    doBanco=await bcrypt.compare(senhaAnterior, emailRegistrado.senha)
-    if (senhaAnterior && await bcrypt.compare(senhaAnterior, emailRegistrado.senha)) {
-      if(senhaNova && await bcrypt.compare(senhaNova, emailRegistrado.senha)){
-        return {mensagem: 'alterar'}
-      }
-      const hashedPassword = await bcrypt.hash(senhaNova, 10);
-      const usuario = await Usuario.findByPk(id);
-      if (usuario) {
-        await usuario.update({ senha: hashedPassword });
+    
+    if (senhaAnterior){
+       
+      if( await bcrypt.compare(senhaAnterior, usuarioDoId.senha)) {
+    
+        const hashedPassword = await bcrypt.hash(senhaNova, 10);
+        await usuarioDoId.update({ senha: hashedPassword });
         return { mensagem: 'sucesso' };
       }
-    } else {
-      return false;
+     else {
+      return {mensagem: 'incorreta'} ;
     }
   } 
   
  
-  if (emailRegistrado && parseInt(id) !== emailRegistrado.id_usuario) {
-    console.log(typeof id)
-    return { mensagem: 'conflito' };
+  if (emailR) {
+    const emailRegistrado= await Usuario.findOne({
+      where: ({email: emailR})
+    })
+    if (emailRegistrado){
+      
+      return { mensagem: 'conflito' };
+    }
+    else{
+      await usuarioDoId.update({email: emailR})
+      return { mensagem: 'sucesso' };
+    }
   } 
 
-  
-  if (!emailRegistrado) {
-    const usuario = await Usuario.findByPk(id);
-    if (usuario) {
-      await usuario.update({ email });
-      return { mensagem: 'sucesso' };
-    } else {
-      return { mensagem: 'naoEncontrado' };
-    }
-  }
-};
+
+}
 
 
 // Deletar usuário
@@ -167,7 +159,7 @@ exports.esquecerSenha = async (email) => {
 
   // Envia o link de redefinição de senha
   await transporter.sendMail({
-    from: '',
+    from: 'ce7535cd4b-b41602@inbox.mailtrap.io',
     to: email,
     subject: 'Redefinir Senha',
     html: `<h2>Clique no link para redefinir sua senha:<h2> <a href="${resetLink}">clique aqui</a>`,
