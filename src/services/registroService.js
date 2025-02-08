@@ -48,7 +48,7 @@ const agendarProcessamento = (registro) => {
             
             if (!contaAtualizada) {
                 console.error('Conta não encontrada para processamento.');
-                console.log(2)
+                
                 return;
             }
             
@@ -109,14 +109,14 @@ const agendarProcessamento = (registro) => {
 
 const processarPagamento = async (registro) => {
     const { data, tipo, valor, titulo, categoria, subcategoria, idconta, recorrencia, periodoRecorrencia,id_registro} = registro
-    console.log('primeiro '+id_registro)
+   
     
 
 const contaAtualizada = await Conta.findByPk(idconta);
 const registroProcessado = await Registro.findByPk(id_registro)
 
 if (!contaAtualizada) {
-    console.log('supor 2')
+    
     console.error('Conta não encontrada para processamento.');
     return;
 }
@@ -138,7 +138,7 @@ if (tipo === 'entrada') {
 await contaAtualizada.save();
 if(registroProcessado){
     await registroProcessado.update({processado: true})
-    console.log('segundo '+registroProcessado.id_registro)
+    
 }
 
 await registroProcessado.reload();
@@ -169,8 +169,7 @@ if (recorrencia === 'sim') {
     
     console.log(`Novo registro recorrente criado: ID ${novoRegistro.id_registro}, Próximo pagamento: ${novoRegistro.proximo_pagamento}`);
     
-    console.log('é isso ai' +novoRegistro.data)
-    console.log('eeeeeeeeeepaaaaa'+dataHoje)
+    
     if(novoRegistro.data<=dataHoje){
         novoRegistro.processado=true
         await novoRegistro.save();
@@ -188,7 +187,7 @@ exports.inserirRegistro = async (dadosRegistro, idConta) => {
     const conta = await Conta.findByPk(idConta);
 
     if (!conta) {
-        console.log(1)
+       
         return null; // retorna null se a conta não existir
     }
 
@@ -214,7 +213,7 @@ exports.inserirRegistro = async (dadosRegistro, idConta) => {
     const ajusteHoje = ajustarParaUTC3ComUmDia(new Date());
     ajusteHoje.setDate(ajusteHoje.getDate() -1 );
     dataHoje=ajusteHoje
-    console.log(dataHoje)
+    
     if (recorrencia==='sim'){
         proximoPagamento = calcularProximoPagamento(dataPagamento, periodoRecorrencia);
     }
@@ -236,16 +235,15 @@ exports.inserirRegistro = async (dadosRegistro, idConta) => {
         idconta: conta.id_conta,
         processado: false, // Campo para controle de duplicação
     });
-    console.log(registro.id_registro)
+    
     
     console.log(`Registro inicial criado: ID ${registro.id_registro}, Próximo pagamento: ${proximoPagamento || 'N/A'}`);
     
     if (registro.data <= dataHoje) {
         let id_registro=registro.id_registro
-        console.log('oiaaaa ->>>>>>>>>>> '+id_registro)
+        
         await processarPagamento(registro);
-        console.log(registro.processado)
-        console.log('jugabiguler uuuuuuuuuuuuuuuuuu')
+       
     }
 
     else{
@@ -265,7 +263,7 @@ exports.inserirRegistro = async (dadosRegistro, idConta) => {
 
 };  
 exports.buscarRegistroPorConta = (id) => {
-    console.log("ID recebido:", id);
+    
     return Registro.findAll({
         where: {
             idconta: id
@@ -273,6 +271,67 @@ exports.buscarRegistroPorConta = (id) => {
     });
 };
 
-exports.atualizarRegistro = async (id) =>{
+exports.atualizarRegistro = async (dadosRegistro,id) =>{
+    const { data, tipo, valor, titulo, categoria, subcategoria, recorrencia, periodoRecorrencia} = dadosRegistro
+    const registroAtual = await Registro.findByPk(id)
+    const dataPagamento = ajustarParaUTC3ComUmDia(data);
+    let valorFloat = parseFloat(valor);
+    if (isNaN(valorFloat)) {
+        throw new Error('Valor inválido');
+    }
+
+    if (recorrencia==='sim'){
+        proximoPagamento = calcularProximoPagamento(dataPagamento, periodoRecorrencia);
+    }
+    else{
+        proximoPagamento = null;
+    }
     
+    if(registroAtual && registroAtual.processado==false){
+        await registroAtual.update({
+            data: data,
+            tipo: tipo,
+            valor: valorFloat,
+            titulo: titulo,
+            categoria: categoria,
+            subcategoria: subcategoria,
+            recorrencia: recorrencia,
+            periodoRecorrencia: periodoRecorrencia,
+            proximo_pagamento: proximoPagamento
+        })
+    
+   
+        const ajusteHoje = ajustarParaUTC3ComUmDia(new Date());
+        ajusteHoje.setDate(ajusteHoje.getDate() -1 );
+        dataHoje=ajusteHoje
+       
+        if (registroAtual.data <= dataHoje) {
+           
+            await processarPagamento(registroAtual);
+            
+        }
+    
+        else{
+            
+            await agendarProcessamento(registroAtual);
+        }
+    
+        return {
+            mensagem: 'Registro atualizado com sucesso! O pagamento será processado automaticamente na data de vencimento.',
+            proximoPagamento: recorrencia === 'sim' ? proximoPagamento : null,
+        };
+    }else{
+        return null
+    }
+    
+}
+
+exports.deletarRegistro = async (id) =>{
+    return Registro.findByPk(id)
+    .then(registro=>{
+        if (registro){
+            return registro.destroy()
+        }
+        return null
+    })
 }

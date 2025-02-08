@@ -23,7 +23,7 @@ exports.Insert = (req, res, next) => {
             if (!usuario){
                 res.status(400).send('O email já está registrado.')
             }
-            if (usuario) {
+           else if (usuario) {
                 res.status(201).send(usuario);
             } else {
                 res.status(404).send();
@@ -77,19 +77,16 @@ exports.Update = (req, res, next) => {
     usuarioService.atualizarUsuario(id, nome,email,senhaAnterior,senhaNova)
         .then(resultado => {
             if (resultado.mensagem=='sucesso') {
-                return res.status(200).json({ mensagem: resultado.mensagem });
+                 res.status(200).send('Dados atualizados.');
               }
-            else if(resultado.mensagem=='alterar'){
-                return res.status(400).json({mensagem: resultado.mensagem})
-            }
             else if(resultado.mensagem=='conflito'){
-                return res.status(409).json({mensagem: resultado.mensagem})
+                 res.status(409).send('Email já cadastrado.')
             }
-            else if(resultado.mensagem=='naoEncontrado'){
-                return res.status(404).json({mensagem: resultado.mensagem})
-            }
-              return res.status(500).json({ mensagem: 'Ocorreu um erro ao atualizar o usuário.' });
-            }).catch(error => next(error));
+            else if(resultado.mensagem=='incorreta'){
+                res.status(401).send('Senha anterior não confere.')
+           }
+           else{ res.status(500).send( 'Ocorreu um erro ao atualizar o usuário.' );
+        }}).catch(error => next(error));
 }
 exports.Delete = (req, res, next) => {
     const id = req.params.id_usuario;
@@ -134,7 +131,7 @@ exports.ForgotPassword = async (req, res, next) => {
       if (!result) {
         return res.status(404).json({ message: 'E-mail não encontrado' });
       }
-      res.status(200).json({ message: 'E-mail de recuperação enviado' });
+      res.status(200).send('E-mail de recuperação enviado' );
     } catch (error) {
       next(error);
     }
@@ -149,9 +146,9 @@ exports.ResetPassword = async (req, res, next) => {
     try {
       const usuario = await usuarioService.resetarSenha(token, senhaNova);
       if (!usuario) {
-        return res.status(400).json({ message: 'Token inválido ou expirado' });
+        return res.status(400).send('Token inválido ou expirado' );
       }
-      res.status(200).json({ message: 'Senha redefinida com sucesso!' });
+      res.status(200).send('Senha redefinida com sucesso!' );
     } catch (error) {
       next(error);
     }

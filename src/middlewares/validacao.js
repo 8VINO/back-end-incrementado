@@ -49,19 +49,19 @@ function validarLogin(req,res, next){
 function validarPefil(req,res,next){
     const { nome, email, senhaAnterior,senhaNova, confirmar } = req.body;
     if (!nome){
-        return res.status(422).json({mensagem:"Este campo não pode estar vazio"})
+        return res.status(422).json({mensagem:"O campo 'nome' não pode estar vazio"})
     }
     if (!email){
-        return res.status(422).json({mensagem:"Este campo não pode estar vazio"})
+        return res.status(422).json({mensagem:"O campo 'email não pode estar vazio"})
     }
     if (!regex.test(email)) {
-        return res.status(422).json({ mensagme: "O email fornecido é inválido." });
+        return res.status(422).json({ mensagme: "O 'email' fornecido é inválido." });
       }
     if (!senhaAnterior){
-        return res.status(422).json({mensagem:"Este campo não pode estar vazio"})
+        return res.status(422).json({mensagem:"O campo 'senhaAnterior' não pode estar vazio"})
     }
     if (!senhaNova){
-        return res.status(422).json({mensagem:"Este campo não pode estar vazio"})
+        return res.status(422).json({mensagem:"O campo 'senhaNova' não pode estar vazio"})
     }
     if (senhaNova.length < 8) {
         return res.status(422).json({ mensagem: "A senha deve ter no mínimo 8 caracteres" });
@@ -76,7 +76,7 @@ function validarPefil(req,res,next){
 function validarEsquecerSenha(req,res,next){
     const {senhaNova, confirmar}= req.body
     if (!senhaNova){
-        return res.status(422).json({mensagem:"Este campo não pode estar vazio"})
+        return res.status(422).json({mensagem:"O campo 'senhaNova' não pode estar vazio"})
     }
     if (senhaNova.length < 8) {
         return res.status(422).json({ mensagem: "A senha deve ter no mínimo 8 caracteres" });

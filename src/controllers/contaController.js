@@ -10,7 +10,7 @@ exports.Update=(req,res,next)=>{
              res.status(200).send(meta);
         }
       
-           res.status(500).json({ mensagem: 'Ocorreu um erro ao atualizar a meta.' });
+        else{res.status(500).json({ mensagem: 'Ocorreu um erro ao atualizar a meta.' })};
         }).catch(error => next(error));
 }
 
