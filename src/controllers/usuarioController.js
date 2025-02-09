@@ -112,10 +112,10 @@ exports.Login = (req,res,next) =>{
                 res.status(401).send('Email ou senha invalidos.')
             }
             
-            
-            const token = jwt.sign({id_usuario: dados}, secret);
+            else{
+            const token = jwt.sign({id_usuario: dados}, secret);// paylad e assinatura digital
             res.status(200).json({ id_usuario: dados, token: token });
-            
+            }
 
         })
         .catch(error => next(error));
@@ -129,9 +129,11 @@ exports.ForgotPassword = async (req, res, next) => {
     try {
       const result = await usuarioService.esquecerSenha(email);
       if (!result) {
-        return res.status(404).json({ message: 'E-mail não encontrado' });
+         res.status(404).json({ message: 'E-mail não encontrado' });
       }
+      else{
       res.status(200).send('E-mail de recuperação enviado' );
+        }
     } catch (error) {
       next(error);
     }
@@ -146,9 +148,11 @@ exports.ResetPassword = async (req, res, next) => {
     try {
       const usuario = await usuarioService.resetarSenha(token, senhaNova);
       if (!usuario) {
-        return res.status(400).send('Token inválido ou expirado' );
+         res.status(400).send('Token inválido ou expirado' );
       }
+      else{
       res.status(200).send('Senha redefinida com sucesso!' );
+        }
     } catch (error) {
       next(error);
     }

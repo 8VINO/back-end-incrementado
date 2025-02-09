@@ -1,24 +1,11 @@
 const registroService = require('../services/registroService');
-const dayjs = require('dayjs'); //validar data
+
 
 //Vai servir para a gente inserir o registro
 exports.Insert = (req, res, next) => {
     const dadosRegistro = req.body;
     const idConta = req.params.id_conta; // ID da conta passada como parâmetro na URL
     
-    
-
-
-    // validar a data 
-    const { data } = dadosRegistro;
-    const hoje = dayjs().startOf('day'); // começa no início do dia de hoje
-    
-    // verifica se a data é válida
-    if (!dayjs(data).isValid()) {
-        return res.status(400).json({ menssagem: 'Data inválida!' });
-    }
-
-    // verifica se a data é antiga
     
 
     registroService.inserirRegistro(dadosRegistro, idConta)

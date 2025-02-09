@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../config/database')
 const Registro = require('./registro');
-const Usuario =  require('./usuario')
+
 
 
 

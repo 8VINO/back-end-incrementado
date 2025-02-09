@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../config/database');
-const Conta = require('./conta');
+
 
 const Registro = sequelize.define('registros', {
     id_registro: {
