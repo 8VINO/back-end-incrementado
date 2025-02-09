@@ -159,7 +159,7 @@ exports.esquecerSenha = async (email) => {
 
   // Envia o link de redefinição de senha
   await transporter.sendMail({
-    from: 'ce7535cd4b-b41602@inbox.mailtrap.io',
+    from: '',
     to: email,
     subject: 'Redefinir Senha',
     html: `<h2>Clique no link para redefinir sua senha:<h2> <a href="${resetLink}">clique aqui</a>`,

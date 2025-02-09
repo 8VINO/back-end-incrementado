@@ -40,7 +40,7 @@ const agendarProcessamento = (registro) => {
             const registroAtual = await Registro.findByPk(id_registro);
             
             
-            if (!registroAtual || registroAtual.processado) {
+            if (!registroAtual || registroAtual.processado==true) {
                 console.log('Registro já processado ou não encontrado.');
                 return;
             }
@@ -240,7 +240,7 @@ exports.inserirRegistro = async (dadosRegistro, idConta) => {
     console.log(`Registro inicial criado: ID ${registro.id_registro}, Próximo pagamento: ${proximoPagamento || 'N/A'}`);
     
     if (registro.data <= dataHoje) {
-        let id_registro=registro.id_registro
+        
         
         await processarPagamento(registro);
        
