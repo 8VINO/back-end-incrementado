@@ -91,14 +91,15 @@ exports.atualizarUsuario = async (id, nomeR, emailR, senhaAnterior, senhaNova) =
 
 
 // Deletar usuário
-exports.deletarUsuario = (id) => {
-  return Usuario.findByPk(id)
-    .then(usuario => {
-      if (usuario) {
-        return usuario.destroy();
-      }
-      return null; 
-    });
+exports.deletarUsuario = async (senhaR,id) => {
+  const usuarioDoId = await Usuario.findByPk(id)
+    if(await bcrypt.compare(senhaR,usuarioDoId.senha)){
+      return usuarioDoId.destroy()
+    }
+    else{
+      return null
+    }
+  
 };
 
 // Verificar usuário

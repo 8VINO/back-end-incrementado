@@ -90,8 +90,9 @@ exports.Update = (req, res, next) => {
 }
 exports.Delete = (req, res, next) => {
     const id = req.params.id_usuario;
+    const senhaR= req.body.senha
 
-    usuarioService.deletarUsuario(id)
+    usuarioService.deletarUsuario(senhaR,id)
         .then(usuario => {
         if (usuario) {
             res.status(200).send('Usuário deletado');
