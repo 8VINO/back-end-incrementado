@@ -31,6 +31,13 @@ O projeto **Infocash** é uma aplicação web desenvolvida para auxiliar os usu�
    ou o comando equivalente conforme a tecnologia utilizada.
 
 3. **Inicie o servidor**:  
+   Preencha os dados do seu banco de dados no arquivo .env:
+   DB_HOST: '*digite o usuario do seu banco de dados*'
+   DB_PASSWORD: '*digite a senha do seu banco de dados*'
+
+   Vá no seu Mysql e crie um database chamado "infocash" com o comando:
+   CREATE DATABASE infocash;
+
    Execute o comando para iniciar a aplicação:
    ```bash
    npm start
@@ -42,7 +49,25 @@ O projeto **Infocash** é uma aplicação web desenvolvida para auxiliar os usu�
    ```
    http://localhost:3005/api/ *rota especifica que quer usar*
    ```
-   
+
+5. **Caso a rota seja /registro/esquecer-senha**:
+   Para utilizar essa rota  você deve preencher os dados do transport do nodemailer presente no ./src/services/usuarioService.js(exports.esquercerSenha), para isso você deve cria/entrar na conta do mailtrap.io e esses dados são obtidos através do https://mailtrap.io/inboxes/3394619/settings onde vai conter na aba 'Integration' na seleção 'SMTP' o host,username e password que serão preenchido nesses seguintes campos:
+   var transporter = nodemailer.createTransport({
+      host: "", (host)
+      port: 2525,
+      auth: {
+         user: "", (username)
+         pass: ""   (password)
+      }
+   });
+
+   Para o envio do link voce deve preencher o campo 'from:' com os dados fornecido na aba 'Email address' do mailtrap.io
+   await transporter.sendMail({
+    from: '', (campo que deve ser preenchido, ex: abc2222dee3334-b111@inbox.mailtrap.io)
+    to: email,
+    subject: 'Redefinir Senha',
+    html: `<h2>Clique no link para redefinir sua senha:<h2> <a href="${resetLink}">clique aqui</a>`,
+  });
 
 ## Contribuição
 
